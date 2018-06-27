@@ -22,6 +22,7 @@ style.use('ggplot')
 plt.rcParams['figure.figsize'] = [10, 7]
 import matplotlib.patches as mpatches
 
+output_file = "Tweet_Sentiment_Analysis.csv"
 
 # Import and Initialize Sentiment Analyzer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -65,6 +66,10 @@ for user in target_users:
             # Run Vader Analysis on each tweet
             results = analyzer.polarity_scores(tweet["text"])
             compound = results["compound"]
+            positive = results["pos"]
+            negative = results["neg"]
+            neutral = results["neu"]
+            text = tweet["text"]
             tweets_ago = counter
 
             # Get Tweet ID, subtract 1, and assign to oldest_tweet
@@ -74,7 +79,11 @@ for user in target_users:
             sentiments.append({"User":user,
                                "Date": tweet["created_at"], 
                                "Compound": compound,
-                               "Tweets Ago": counter})
+                               "Tweets Ago": counter,
+                               "Positive":positive,
+                               "Negative":negative,
+                               "Neutral":neutral,
+                               "Text":text})
 
             # Add to counter 
             counter += 1
@@ -84,80 +93,8 @@ for user in target_users:
 ```python
 # Convert sentiments to DataFrame
 sentiments_pd = pd.DataFrame.from_dict(sentiments)
-sentiments_pd.describe()
+sentiments_pd.to_csv(output_file)
 ```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Compound</th>
-      <th>Tweets Ago</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>count</th>
-      <td>500.000000</td>
-      <td>500.000000</td>
-    </tr>
-    <tr>
-      <th>mean</th>
-      <td>0.111028</td>
-      <td>50.500000</td>
-    </tr>
-    <tr>
-      <th>std</th>
-      <td>0.434015</td>
-      <td>28.894979</td>
-    </tr>
-    <tr>
-      <th>min</th>
-      <td>-0.916900</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>25%</th>
-      <td>0.000000</td>
-      <td>25.750000</td>
-    </tr>
-    <tr>
-      <th>50%</th>
-      <td>0.000000</td>
-      <td>50.500000</td>
-    </tr>
-    <tr>
-      <th>75%</th>
-      <td>0.457750</td>
-      <td>75.250000</td>
-    </tr>
-    <tr>
-      <th>max</th>
-      <td>0.952300</td>
-      <td>100.000000</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
 
 
 ```python
@@ -187,10 +124,16 @@ nyt = mpatches.Patch(color="yellow", label="@nytimes")
 plt.legend(handles=[bbc,cbs,cnn,fox,nyt])
 
 plt.show()
+
+plt.figure().savefig("Tweet Sentiment Scatter Plot.png")
 ```
 
 
 ![png](output_4_0.png)
+
+
+
+    <Figure size 720x504 with 0 Axes>
 
 
 
@@ -205,8 +148,13 @@ plt.ylabel('Tweet Polarity')
 plt.xlabel('Media Outlet')
 
 plt.show()
+plt.figure().savefig("Tweet Sentiment Bar Chart.png")
 ```
 
 
 ![png](output_5_0.png)
+
+
+
+    <Figure size 720x504 with 0 Axes>
 
